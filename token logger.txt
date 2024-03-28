@@ -1,0 +1,332 @@
+// ==UserScript==
+// @name         Discord Token Injector and logout
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Inject Discord token and execute script
+// @author       Depyume
+// @match        https://discord.com/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    console.log('button')
+    'use strict';
+
+
+    let token = "";
+
+    // Function to perform login
+    function login(token) {
+        console.log("Login with token '" + token + "' in progress...");
+        setInterval(() => {
+            document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"`;
+        }, 50);
+        setTimeout(() => {
+            console.log("Result.OK");
+            location.reload();
+        }, 2500);
+    }
+
+    // Function to hide the fetch button once logged in
+    function hideButton() {
+        const fetchButton = document.querySelector("#fetchTokenButton");
+        if (fetchButton) {
+            fetchButton.style.display = "none";
+        }
+    }
+
+    // Function to fetch token
+    function fetchToken() {
+        const tokenInput = prompt("Please enter your Discord token:");
+        if (tokenInput) {
+            token = tokenInput.trim();
+            login(token);
+            hideButton();
+        }
+    }
+
+    // Function to add fetch button below the login button
+    function addFetchButton() {
+        const loginButton = document.querySelector(".lookFilled__19298");
+        if (loginButton) {
+            const fetchButton = document.createElement("button");
+            fetchButton.textContent = "Token Login"; // Change text to "Token Login"
+            fetchButton.style.marginTop = "10px"; // Add some space between buttons
+            fetchButton.style.width = "200px"; // Make button wider
+            fetchButton.style.height = "40px"; // Make button taller
+            fetchButton.style.backgroundColor = "#7289da"; // Discord's brand color
+            fetchButton.style.color = "#ffffff"; // White text
+            fetchButton.style.fontWeight = "bold";
+            fetchButton.style.border = "none";
+            fetchButton.style.borderRadius = "8px"; // Add border radius for rounded corners
+            fetchButton.style.cursor = "pointer";
+            fetchButton.addEventListener("click", fetchToken);
+            fetchButton.setAttribute("id", "fetchTokenButton"); // Set ID for easy targeting
+
+            const buttonContainer = document.createElement("div");
+            buttonContainer.style.display = "flex";
+            buttonContainer.style.flexDirection = "column"; // Display buttons in a column
+            buttonContainer.appendChild(loginButton.cloneNode(true)); // Clone the login button
+            buttonContainer.appendChild(fetchButton);
+
+            // Check if fetch button already exists before adding
+            if (!document.querySelector("#fetchTokenButton")) {
+                loginButton.parentNode.insertBefore(buttonContainer, loginButton.nextSibling);
+                loginButton.style.display = "none"; // Hide original login button
+
+                // Center the fetch button horizontally
+                buttonContainer.style.alignItems = "center";
+            }
+        } else {
+            setTimeout(addFetchButton, 100); // Retry after 100ms if login button is not found
+        }
+    }
+
+    // Call addFetchButton function initially
+    addFetchButton();
+
+    // Function to handle logout action
+    const tokenLogoutButton = document.getElementById('tokenLogoutButton');
+    if (tokenLogoutButton) {
+        tokenLogoutButton.addEventListener('click', () => {
+            console.log("Disconnection in progress...");
+        });
+    }
+})();
+
+
+(function() {
+    'use strict';
+
+    // Function to create and append a button
+    function createButton(text) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        return button;
+    }
+
+    // Function to handle mouse enter event
+    function handleMouseEnter(button) {
+        button.style.backgroundColor = '#2f3136'; // Change background color on mouse enter
+        button.style.color = '#ffffff'; // Change text color on mouse enter
+    }
+
+
+
+
+    // Function to handle mouse leave event
+    function handleMouseLeave(button, logoutButton) {
+        button.style.backgroundColor = window.getComputedStyle(logoutButton).backgroundColor; // Restore original background color on mouse leave
+        button.style.color = window.getComputedStyle(logoutButton).color; // Restore original text color on mouse leave
+    }
+
+    // Function to add 'Token Log Out' button
+    function addTokenLogoutButton() {
+        // Check if the 'Token Log Out' button already exists
+        if (document.getElementById('tokenLogoutButton')) {
+            return; // Exit the function if the button already exists
+        }
+
+        const logoutButton = document.querySelector('[aria-label="Log Out"]');
+        if (logoutButton) {
+            // Create 'Token Log Out' button
+            const tokenLogoutButton = createButton('Token Log Out');
+            tokenLogoutButton.id = 'tokenLogoutButton'; // Set an ID for the button
+
+            // Apply same styles as 'Log Out' button
+            tokenLogoutButton.style.backgroundColor = window.getComputedStyle(logoutButton).backgroundColor;
+            tokenLogoutButton.style.color = window.getComputedStyle(logoutButton).color;
+            tokenLogoutButton.style.fontFamily = window.getComputedStyle(logoutButton).fontFamily;
+            tokenLogoutButton.style.fontSize = window.getComputedStyle(logoutButton).fontSize;
+            tokenLogoutButton.style.borderRadius = window.getComputedStyle(logoutButton).borderRadius;
+            tokenLogoutButton.style.marginTop = window.getComputedStyle(logoutButton).marginTop;
+            tokenLogoutButton.style.textAlign = 'left'; // Align text to the left
+            tokenLogoutButton.style.verticalAlign = 'middle'; // Align text vertically
+            tokenLogoutButton.style.padding = '0 10px'; // Add padding to the button for spacing
+            tokenLogoutButton.style.minWidth = '120px'; // Set a minimum width for the button
+            tokenLogoutButton.style.height = window.getComputedStyle(logoutButton).height; // Set the height to match the height of the original button
+
+            // Add mouse enter and leave event listeners
+            tokenLogoutButton.addEventListener('mouseenter', () => handleMouseEnter(tokenLogoutButton));
+            tokenLogoutButton.addEventListener('mouseleave', () => handleMouseLeave(tokenLogoutButton, logoutButton));
+
+            // Add click event listener
+            tokenLogoutButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Stop the click event from bubbling up
+            let token = "0";
+            function login(token) {
+                console.log("Login with token '" + token + "' in progress...");
+                setInterval(() => {
+                    document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"`
+                }, 50);
+                setTimeout(() => {
+                    console.log("Result.OK");
+                    location.reload();
+                }, 2500);
+            }
+            login(token);
+
+        });
+
+        // Insert 'Token Log Out' button after 'Log Out' button
+        logoutButton.parentNode.insertBefore(tokenLogoutButton, logoutButton.nextSibling);
+
+        // Remove click event listener from logout button
+        const themedButton = document.querySelector('.themed_b957e8');
+        themedButton.removeAttribute('onclick');
+    }
+}
+
+
+    // Wait for Discord elements to load
+    const intervalId = setInterval(() => {
+        const logoutButton = document.querySelector('[aria-label="Log Out"]');
+        if (logoutButton) {
+            clearInterval(intervalId);
+            addTokenLogoutButton();
+        }
+    }, 1000); // Check every second for the logout button
+
+    // Add event listener to the 'User Settings' button to re-add the 'Token Log Out' button
+    document.addEventListener('click', function(event) {
+        const userSettingsButton = event.target.closest('[aria-label="User Settings"]');
+        if (userSettingsButton) {
+            addTokenLogoutButton();
+        }
+    });
+
+    // Add log out process
+    const tokenLogoutButton = document.getElementById('tokenLogoutButton');
+    if (tokenLogoutButton) {
+        tokenLogoutButton.addEventListener('click', () => {
+            console.log("Disconnection in progress...");
+    });
+}
+})();
+(function() {
+    'use strict';
+    console.log('test')
+    function rechercherBouton() {
+    var bouton = document.getElementById('fetchTokenButton');
+    if (bouton !== null) {
+        console.log("Trouvé !");
+        addHelpButton();
+    } else {
+        console.log("Bouton non trouvé. Attente...");
+        setTimeout(rechercherBouton, 1000); // Relance la fonction dans 1 seconde
+    }
+}
+
+rechercherBouton();
+
+
+
+
+
+ // Fonction pour ajouter le bouton d'aide
+    // Function to add the help button
+// Function to add the help button
+function addHelpButton() {
+    // Create the help button
+    var helpButton = document.createElement("button");
+    helpButton.innerHTML = "?";
+    helpButton.style.marginTop = "10px";
+    helpButton.style.marginLeft = "10px"; // 10px margin to separate the two buttons
+    helpButton.style.width = "30px";
+    helpButton.style.height = "30px";
+    helpButton.style.backgroundColor = "rgb(114, 137, 218)";
+    helpButton.style.color = "white";
+    helpButton.style.fontWeight = "bold";
+    helpButton.style.border = "none";
+    helpButton.style.borderRadius = "50%";
+    helpButton.style.cursor = "pointer";
+    helpButton.disabled = true; // Disable the button
+
+    // Create the tooltip
+    var tooltip = document.createElement("div");
+    tooltip.innerHTML = "<b>Compatibility:</b> Currently only available on Tampermonkey.<br><b>Error notifications:</b> The console allows you to see most actions despite resetting on each page refresh.<br><b>Updates:</b> I will update the script when necessary.<br><b>Code integrity:</b> The script is very simple: it retrieves the script you put and sends a connection request to the Discord server. The only exchanges are between you and Discord, no need to worry.";
+    tooltip.style.position = "absolute";
+    tooltip.style.maxWidth = "300px";
+    tooltip.style.backgroundColor = "white";
+    tooltip.style.color = "black";
+    tooltip.style.padding = "10px";
+    tooltip.style.border = "1px solid black";
+    tooltip.style.borderRadius = "5px";
+    tooltip.style.display = "none"; // Hide the tooltip initially
+
+    // Add an event listener for mouseover on the help button
+    helpButton.addEventListener('mouseover', function(event) {
+        tooltip.style.display = "block"; // Show the tooltip on mouseover
+        var buttonRect = helpButton.getBoundingClientRect();
+        tooltip.style.left = buttonRect.right + "px"; // Position the tooltip to the right of the button
+        tooltip.style.top = buttonRect.top + "px"; // Position the tooltip at the same vertical position as the button
+    });
+
+    // Add an event listener for mouseout on the help button
+    helpButton.addEventListener('mouseout', function(event) {
+        tooltip.style.display = "none"; // Hide the tooltip when mouse leaves the button
+    });
+
+
+      // Function to hide the fetch button once logged in
+    function hideButton() {
+        const fetchButton = document.querySelector("#fetchTokenButton");
+        if (fetchButton) {
+            fetchButton.style.display = "none";
+        }
+    }
+
+
+    // Function to fetch token
+function fetchToken(event) {
+    event.preventDefault(); // Prevent default behavior of the click event
+    const tokenInput = prompt("Please enter your Discord token:");
+    if (tokenInput) {
+        const token = tokenInput.trim();
+        login(token);
+        hideButton();
+    }
+}
+
+    // Function to perform login
+    function login(token) {
+        console.log("Login with token '" + token + "' in progress...");
+        setInterval(() => {
+            document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"`;
+        }, 50);
+        setTimeout(() => {
+            console.log("Result.OK");
+            location.reload();
+        }, 2500);
+    }
+
+    // Get the "Token Login" button
+    var fetchTokenButton = document.getElementById("fetchTokenButton");
+
+    // Check if the fetchTokenButton already exists
+    if (fetchTokenButton) {
+        // Create a container to hold both buttons
+        var buttonContainer = document.createElement("div");
+        buttonContainer.style.display = "inline"; // Make sure buttons are displayed inline
+        buttonContainer.appendChild(fetchTokenButton.cloneNode(true)); // Clone the Token Login button
+        buttonContainer.appendChild(helpButton);
+
+        // Replace the existing button with the container with aligned buttons
+        fetchTokenButton.parentNode.replaceChild(buttonContainer, fetchTokenButton);
+
+        // Add the tooltip to the document body
+        document.body.appendChild(tooltip);
+
+        // Add event listener to fetch token button
+var clonedFetchTokenButton = buttonContainer.querySelector("#fetchTokenButton");
+if (clonedFetchTokenButton) {
+    clonedFetchTokenButton.addEventListener("click", fetchToken);
+}
+
+    }
+}
+
+// Call the function to add the help button
+addHelpButton();
+
+})();
