@@ -81,9 +81,11 @@
             setTimeout(addFetchButton, 100); // Retry after 100ms if login button is not found
         }
     }
+    if (window.location.href === "https://discord.com/login") {
+            addFetchButton();
 
-    // Call addFetchButton function initially
-    addFetchButton();
+    }
+
 
     // Function to handle logout action
     const tokenLogoutButton = document.getElementById('tokenLogoutButton');
@@ -326,7 +328,8 @@ if (clonedFetchTokenButton) {
     }
 }
 
-// Call the function to add the help button
-addHelpButton();
+if (window.location.href === "https://discord.com/login") {
+        addHelpButton();
+    }
 
 })();
